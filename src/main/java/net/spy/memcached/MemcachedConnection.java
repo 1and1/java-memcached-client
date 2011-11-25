@@ -351,6 +351,12 @@ public final class MemcachedConnection extends SpyObject implements Reconfigurab
 						getLogger().warn("Exception handling write", e);
 						lostConnection(qa);
 					}
+				} else {
+					Operation cwop = qa.getCurrentWriteOp();
+					if(cwop != null && cwop.isTimedOut()){
+						qa.removeCurrentWriteOp();
+						getLogger().debug("Removed already timed out head from write-queue");
+					}
 				}
 				qa.fixupOps();
 			}
